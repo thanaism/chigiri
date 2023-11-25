@@ -17,9 +17,10 @@ export default function Home({ liff }: { liff: Liff | null }) {
         if (idToken != null) setIdToken(idToken);
     }, []);
 
-    const chigiri = () => {
+    const chigiriButton = () => {
         if (liff == null) return <Text>liffが読み込まれていません</Text>;
-        // if (!liff.isInClient()) return <QRCodeSVG value={`https://liff.line.me/${env.NEXT_PUBLIC_LIFF_ID}`} />;
+        // if (!liff.isInClient())
+        //     return <QRCodeSVG value={`https://liff.line.me/${env.NEXT_PUBLIC_LIFF_ID}`} includeMargin={true} />;
         if (idToken == null) return <Text>ログイン処理に失敗しています</Text>;
         return (
             <Button
@@ -55,7 +56,7 @@ export default function Home({ liff }: { liff: Liff | null }) {
                     </h1>
                     <Image src="/chigiri.png" alt="chigiri" width="400px" height="400px" />
                     <p className={styles.showcaseText}>さあ、契りましょう……</p>
-                    {chigiri()}
+                    {chigiriButton()}
                 </div>
             </main>
         </>
