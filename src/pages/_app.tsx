@@ -5,12 +5,13 @@ import { api } from '~/utils/api';
 import '~/styles/globals.css';
 import { useEffect, useState } from 'react';
 import { env } from '~/env';
-import { ChakraProvider } from '@chakra-ui/react';
+import { Center, ChakraProvider, Spinner } from '@chakra-ui/react';
 import type { Liff } from '@line/liff';
 
 const MyApp = ({ Component, pageProps }: AppProps<{ liff: Liff | null; liffError: string | null }>) => {
     const [liffObject, setLiffObject] = useState<Liff | null>(null);
     const [liffError, setLiffError] = useState<string | null>(null);
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
         // to avoid `window is not defined` error
@@ -25,6 +26,7 @@ const MyApp = ({ Component, pageProps }: AppProps<{ liff: Liff | null; liffError
                     .then(() => {
                         console.log('LIFF init succeeded.');
                         setLiffObject(liff);
+                        setInitialized(true);
                     })
                     .catch((error: Error) => {
                         console.log('LIFF init failed.');
@@ -35,6 +37,16 @@ const MyApp = ({ Component, pageProps }: AppProps<{ liff: Liff | null; liffError
 
     pageProps.liff = liffObject;
     pageProps.liffError = liffError;
+
+    if (!initialized)
+        return (
+            <Center minH="100dvh" minW="100dvw">
+                <Center minH="100dvh" minW="100dvw">
+                    <Spinner size="xl" />
+                </Center>
+            </Center>
+        );
+
     return (
         <ChakraProvider>
             <Component {...pageProps} />
