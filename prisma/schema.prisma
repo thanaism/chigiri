@@ -6,15 +6,24 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+    provider  = "postgresql"
+    url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+    directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model User {
+    id              String    @id
+    sentChigiri     Chigiri[] @relation("sender")
+    receivedChigiri Chigiri[] @relation("receiver")
+}
 
-    @@index([name])
+model Chigiri {
+    id         String   @id @default(cuid())
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    sender     User     @relation("sender", fields: [senderId], references: [id])
+    receiver   User?    @relation("receiver", fields: [receiverId], references: [id])
+    senderId   String
+    receiverId String?
+    // content    String   @default("")
 }
