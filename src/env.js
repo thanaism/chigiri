@@ -7,13 +7,20 @@ export const env = createEnv({
      * isn't built with invalid env vars.
      */
     server: {
-        DATABASE_URL: z
-            .string()
-            .url()
-            .refine((str) => !str.includes('YOUR_MYSQL_URL_HERE'), 'You forgot to change the default URL'),
         NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+        VERCEL_URL: z.string().url(),
+        // LINE
         LINE_MESSAGING_API_CLIENT_ID: z.string().regex(/^\d{10}$/),
         LINE_MESSAGING_API_CLIENT_SECRET: z.string().regex(/^[a-zA-Z0-9]{32}$/),
+        // Prisma
+        POSTGRES_PRISMA_URL: z.string().url(),
+        POSTGRES_URL_NON_POOLING: z.string().url(),
+        // Google Cloud Platform
+        GCP_PROJECT_ID: z.string().min(1),
+        GCP_CLIENT_EMAIL: z.string().email(),
+        GCP_PRIVATE_KEY: z.string().min(1),
+        GCP_CLOUD_TASKS_LOCATION: z.string().min(1),
+        GCP_CLOUD_TASKS_QUEUE: z.string().min(1),
     },
 
     /**
@@ -31,10 +38,20 @@ export const env = createEnv({
      * middlewares) or client-side so we need to destruct manually.
      */
     runtimeEnv: {
-        DATABASE_URL: process.env.DATABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
+        VERCEL_URL: process.env.VERCEL_URL,
+        // LINE
         LINE_MESSAGING_API_CLIENT_ID: process.env.LINE_MESSAGING_API_CLIENT_ID,
         LINE_MESSAGING_API_CLIENT_SECRET: process.env.LINE_MESSAGING_API_CLIENT_SECRET,
+        // Prisma
+        POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
+        POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING,
+        // Google Cloud Platform
+        GCP_PROJECT_ID: process.env.GCP_PROJECT_ID,
+        GCP_CLIENT_EMAIL: process.env.GCP_CLIENT_EMAIL,
+        GCP_PRIVATE_KEY: process.env.GCP_PRIVATE_KEY,
+        GCP_CLOUD_TASKS_LOCATION: process.env.GCP_CLOUD_TASKS_LOCATION,
+        GCP_CLOUD_TASKS_QUEUE: process.env.GCP_CLOUD_TASKS_QUEUE,
         // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
         NEXT_PUBLIC_LIFF_ID: process.env.NEXT_PUBLIC_LIFF_ID,
     },
