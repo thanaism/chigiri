@@ -25,5 +25,6 @@ model Chigiri {
     receiver   User?    @relation("receiver", fields: [receiverId], references: [id])
     senderId   String
     receiverId String?
-    // content    String   @default("")
+    content    String   @default("")
+    senderName String   @default("")
 }

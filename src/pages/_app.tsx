@@ -19,9 +19,11 @@ const MyApp = ({ Component, pageProps }: AppProps<{ liff: Liff | null; liffError
             .then((liff) => liff.default)
             .then((liff) => {
                 console.log('LIFF init...');
+                const liffId = env.NEXT_PUBLIC_LIFF_ID;
+                clearExpiredIdToken(liffId);
                 liff.init({
-                    liffId: env.NEXT_PUBLIC_LIFF_ID,
-                    withLoginOnExternalBrowser: true,
+                    liffId,
+                    // withLoginOnExternalBrowser: true,
                 })
                     .then(() => {
                         console.log('LIFF init succeeded.');
@@ -52,6 +54,29 @@ const MyApp = ({ Component, pageProps }: AppProps<{ liff: Liff | null; liffError
             <Component {...pageProps} />
         </ChakraProvider>
     );
+};
+
+// liff関連のlocalStorageのキーのリストを取得
+const getLiffLocalStorageKeys = (prefix: string) => {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key != null && key.startsWith(prefix)) keys.push(key);
+    }
+    return keys;
+};
+// 期限切れのIDTokenをクリアする
+const clearExpiredIdToken = (liffId: string) => {
+    const keyPrefix = `LIFF_STORE:${liffId}:`;
+    const key = keyPrefix + 'decodedIDToken';
+    const decodedIDTokenString = localStorage.getItem(key);
+    if (!decodedIDTokenString) return;
+    const decodedIDToken = JSON.parse(decodedIDTokenString) as { exp: number };
+    // 有効期限をチェック
+    if (new Date().getTime() > decodedIDToken.exp * 1000) {
+        const keys = getLiffLocalStorageKeys(keyPrefix);
+        keys.forEach((key) => localStorage.removeItem(key));
+    }
 };
 
 export default api.withTRPC(MyApp);
